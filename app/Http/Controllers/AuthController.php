@@ -102,13 +102,9 @@ class AuthController extends Controller
      */
     public function userProfile() {
         $user=auth()->user();
-         $orderprod=[];$i=0;
-         $cross_sells=[];
-        $orders=$user->orders;
         $this->userList[]=[
             $user,
             'favorites'=>$user->favorites,
-            'orders'=>$orders,
         ];
         return response()->json($this->userList);
     }

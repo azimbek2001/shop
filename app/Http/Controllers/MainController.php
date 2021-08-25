@@ -6,7 +6,7 @@ use  App\Models\Product;
 use  App\Models\Category;
 use  App\Models\Dostinfo;
 use App\Models\CrossSell;
-use App\Models\Payments;
+use App\Models\Payment;
 
 use Illuminate\Http\Request;
 
@@ -28,13 +28,16 @@ class MainController extends Controller
     		'image'=>$product->image,
     		'old_price'=>$product->old_price ,
     		'category'=>$product->category,
-    		'specifications'=>$product->specifications,
+    		'ingridients'=>$product->ingridientsin,
+            'info'=>$product->info,
+
     	];
     	}
     	return response()->json($this->productList);
     }
     public function showProduct($id)
     {
+
     	$product=Product::find($id);
     	if(!$product){
     		return response()->json([
@@ -42,6 +45,16 @@ class MainController extends Controller
     			'message'=>'Product Not Found'
     		],404);
     	}
+        $commentsList=[];
+        foreach ($product->comments as $comment) {
+             $commentsList[]=[
+                'id'=>$comment->id,
+                 'user_name'=>$comment->user->name,
+                'user_surname'=>$comment->user->surname,
+                'body'=>$comment->body,
+                'created_at'=>$comment->created_at,
+             ];
+        }
     	$this->productList[]=[
     		'id'=>$product->id,
     		'name'=>$product->name,
@@ -52,10 +65,12 @@ class MainController extends Controller
     		'is_hit'=>$product->is_hit,
     		'image'=>$product->image,
     		'old_price'=>$product->old_price,
-    		'specifications'=>$product->specifications,
+    		'ingridients'=>$product->ingridients,
     		'category'=>$product->category,
-    		'comments'=>$product->comments,
+            'info'=>$product->info,    
+            'comments'=>$commentsList,	
     	];
+         
     	return response()->json($this->productList);
     }
     
@@ -67,7 +82,7 @@ class MainController extends Controller
             'name'=>$category->name,
             'count'=>count($category->products),
         ];
-            # code...
+            
         }
         
     	return response()->json([$categoriesList]);

@@ -46,8 +46,10 @@ class ProductsController extends Controller
         'having'=>$request->having,
         'price'=>$request->price,
         'is_hit'=>$request->is_hit,
+        'info'=>$request->info,
+
         'old_price'=>$request->old_price,
-        'specifications'=>$request->specifications,
+        'ingridients'=>$request->ingridients,
         ]);
         return $product;
     }
@@ -105,8 +107,9 @@ class ProductsController extends Controller
         $product->having=$request->having;
         $product->price=$request->price;
         $product->is_hit=$request->is_hit;
+        $product->info=$request->info;
         $product->old_price=$request->old_price;
-        $product->specifications=$request->specifications;
+        $product->ingridients=$request->ingridients;
         $product->save();
         return $product;
     }
