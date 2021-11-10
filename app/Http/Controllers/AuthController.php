@@ -31,11 +31,10 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
-
+        
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
         if (! $token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -60,7 +59,7 @@ class AuthController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 200);
         }
 
         $user = User::create(array_merge(
@@ -82,7 +81,6 @@ class AuthController extends Controller
      */
     public function logout() {
         auth()->logout();
-
         return response()->json(['message' => 'User successfully signed out']);
     }
 
@@ -101,16 +99,21 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        $user=auth()->user();
-        $this->userList[]=[
-            $user,
-            'favorites'=>$user->favorites,
-        ];
-        return response()->json($this->userList);
+            
+        return response()->json( $user);
     }
     public function admin(){
     	return response()->json(auth()->user());
     }
+    public function checkToken(Request $request){
+            if(auth()->user()){
+                 return response()->json(['token'=>true]);
+            }
+            return response()->json(['token'=>false]);
+       }
+        
+        
+    
 
     /**
      * Get the token array structure.

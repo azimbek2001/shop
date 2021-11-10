@@ -8,10 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+   protected $fillable = [
+     'id',
+     'name',
+     'surname',  
+     'phone',
+     'address',
+     'status_id',
+     'user_id',
+     'comment',
+     'total',
+       
+    ];
       public function ordersProd(){
         return $this->hasMany(OrderProd::class,'order_id','id');
     }
-     public function orderCrossSells(){
-        return $this->hasMany(OrderCrossSells::class,'id','order_id');
+     
+    public function orderStatus(){
+        return $this->hasOne(Status::class,'id','status_id');
     }
 }

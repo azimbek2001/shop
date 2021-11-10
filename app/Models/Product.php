@@ -22,7 +22,7 @@ class Product extends Model
         'created_at',
         'ingridients',
         'old_price',
-        'info'
+        'info',
     ];
     public function category(){
     	return $this->hasOne(Category::class,'id','category_id');

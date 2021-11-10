@@ -15,17 +15,19 @@ class CommentsController extends Controller
     public function index()
     {
         //
-        $comments=Comment::all();
+
+        $comments=Comment::orderBy('id', 'DESC')->get();
+        $commentList=array();
         foreach ($comments as $comment) {
-            $this->productList[]=[
+            $this->commentList[]=[
             'id'=>$comment->id,
             'body'=>$comment->body,
-            'user'=>$comment->user,
-            'product'=>$comment->product,
-            'created_at'=>$comment->created_at,
+            'user'=>$comment->user->name . " " . $comment->user->surname,
+            
+            'product'=>$comment->product->name,
         ];
         }
-        return response()->json([$this->productList]);
+        return response()->json($this->commentList);
     }
 
     /**
@@ -46,8 +48,7 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-        $comments= Сomment::create([
-        'name'=>$request->name,
+        $comments= \App\Models\Comment::create([      
         'body'=>$request->body,
         'user_id'=>$request->user_id,
         'product_id'=>$request->product_id,
@@ -70,12 +71,13 @@ class CommentsController extends Controller
                 'message'=>'Сomment Not Found'
             ],404);
         }
-        $this->commentList[]=[
+        $this->commentList=[
             'id'=>$comment->id,
             'body'=>$comment->body,
-            'user'=>$comment->user,
-            'product'=>$comment->product,
-            'created_at'=>$comment->created_at,
+              'user'=>$comment->user->name . " " . $comment->user->surname,
+            
+            'product'=>$comment->product->name,
+            
         ];
         return response()->json($this->commentList);
     }

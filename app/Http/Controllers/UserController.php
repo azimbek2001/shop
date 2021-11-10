@@ -14,7 +14,19 @@ class UserController extends Controller
     public function index()
     {
         //
-        return User::all();
+        $this->userList=array();;
+         $users=User::orderBy('id', 'DESC')->get();
+        foreach ($users as $user) {
+            $this->userList[]=[
+            'id'=>$user->id,
+            'name'=>$user->name,
+            'surname'=>$user->surname,
+            'phone'=>$user->phone,
+            'email'=>$user->email,            
+        ];
+        }
+        return response()->json($this->userList);
+       
     }
 
     /**
@@ -54,13 +66,12 @@ class UserController extends Controller
                 'message'=>'User Not Found'
             ],404);
         }
-        $this->userList[]=[
+        $this->userList=[
             'id'=>$user->id,
             'name'=>$user->name,
             'surname'=>$user->surname,
             'phone'=>$user->phone,
             'email'=>$user->email,
-            'created_at'=>$user->created_at,
             'comments'=>$user->comments,
 
         ];

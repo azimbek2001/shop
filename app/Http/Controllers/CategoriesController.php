@@ -14,7 +14,15 @@ class CategoriesController extends Controller
     public function index()
     {
         //
-           return Category::all();
+         $this->categoryList=array();
+        $categories=Category::orderBy('id', 'DESC')->get();
+        foreach ($categories as $category) {
+            $this->categoryList[]=[
+            'id'=>$category->id,
+            'name'=>$category->name,          
+        ];
+        }
+        return response()->json($this->categoryList);
     }
 
     /**
@@ -56,7 +64,13 @@ class CategoriesController extends Controller
                 'message'=>'Category Not Found'
             ],404);
         }
-        return $category;
+        
+            $this->categoryList=[
+            'id'=>$category->id,
+            'name'=>$category->name,          
+           ];
+        
+        return response()->json($this->categoryList);
     }
 
     /**

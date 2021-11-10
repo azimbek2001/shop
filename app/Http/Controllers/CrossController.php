@@ -14,14 +14,24 @@ class CrossController extends Controller
     public function index()
     {
         //
-        $crossSell=CrossSell::all();
-        if(!$crossSell){
+        $crossSells=CrossSell::orderBy('id', 'DESC')->get();
+
+        if(!$crossSells){
             return response()->json([
                 'status'=>false,
                 'message'=>'Not found Cross Sell'
             ]);
         }
-        return  $crossSell;
+        $crossSells=array();
+        foreach ($crossSells as $crossSell) {
+            $this->crossList[]=[
+            'id'=>$crossSell->id,
+            'name'=>$crossSell->name,
+            'price'=>$crossSell->price,
+           
+        ];
+        }
+        return response()->json($this->crossList);
     }
 
     /**
@@ -46,7 +56,7 @@ class CrossController extends Controller
         'name'=>$request->name,
         'price'=>$request->price
         ]);
-        return $category;
+        return $crossSell;
     }
 
     /**
@@ -64,7 +74,13 @@ class CrossController extends Controller
                 'message'=>'cross Sell Not Found'
             ],404);
         }
-        return $crossSell;
+          $this->crossList=[
+            'id'=>$crossSell->id,
+            'name'=>$crossSell->name,
+            'price'=>$crossSell->price,
+           
+        ];
+         return response()->json($this->crossList);
     }
 
     /**

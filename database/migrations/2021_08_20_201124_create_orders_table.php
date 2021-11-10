@@ -19,11 +19,11 @@ class CreateOrdersTable extends Migration
             $table->string('surname');
             $table->string('address');
             $table->unsignedInteger('status_id')->default(1);
+            $table->string('phone');
             $table->unsignedInteger('user_id')->nullable();
-            $table->date('dost_time')->nullable();
+         // $table->date('dost_time')->nullable();
             $table->text('comment')->nullable();
-            $table->unsignedInteger('payment_id');
-            $table->unsignedInteger('order_cross_sell')->nullable();
+         //   $table->unsignedInteger('payment_id');
             $table->bigInteger('total');
             $table->timestamps();
         });

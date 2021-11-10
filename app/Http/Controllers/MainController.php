@@ -15,22 +15,17 @@ class MainController extends Controller
     //
     public function showProducts()
     {
-    	$products=Product::all();
+    	$products=Product::orderBy('id', 'DESC')->get();
     	foreach ($products as $product) {
     		$this->productList[]=[
     		'id'=>$product->id,
     		'name'=>$product->name,
     		'price'=>$product->price,
     		'weight'=>$product->weight,
-    		'description'=>$product->description,
-    		'created_at'=>$product->created_at,
-    		'is_hit'=>$product->is_hit,
     		'image'=>$product->image,
     		'old_price'=>$product->old_price ,
     		'category'=>$product->category,
-    		'ingridients'=>$product->ingridientsin,
             'info'=>$product->info,
-
     	];
     	}
     	return response()->json($this->productList);
@@ -46,27 +41,25 @@ class MainController extends Controller
     		],404);
     	}
         $commentsList=[];
-        foreach ($product->comments as $comment) {
+        $comments=$product->comments;
+        $comments=$comments->sortByDesc('id');
+        foreach ($comments as $comment) {
              $commentsList[]=[
                 'id'=>$comment->id,
-                 'user_name'=>$comment->user->name,
+                'user_name'=>$comment->user->name,
                 'user_surname'=>$comment->user->surname,
                 'body'=>$comment->body,
-                'created_at'=>$comment->created_at,
              ];
         }
-    	$this->productList[]=[
+    	$this->productList=[
     		'id'=>$product->id,
     		'name'=>$product->name,
     		'price'=>$product->price,
     		'weight'=>$product->weight,
     		'description'=>$product->description,
-    		'created_at'=>$product->created_at,
-    		'is_hit'=>$product->is_hit,
     		'image'=>$product->image,
     		'old_price'=>$product->old_price,
-    		'ingridients'=>$product->ingridients,
-    		'category'=>$product->category,
+    		'ingridients'=>$product->ingridients,		
             'info'=>$product->info,    
             'comments'=>$commentsList,	
     	];
@@ -76,6 +69,12 @@ class MainController extends Controller
     
     public function showCategories(){
     	$categories=Category::all();
+        $populars=Product::where('is_hit',true)->get();
+         $categoriesList[]=[
+            'id'=>0,
+               'name'=>'Популярное', 
+               'count'=>count($populars)
+         ];
         foreach ($categories as $category ) {
         $categoriesList[]=[
             'id'=>$category->id,
@@ -84,21 +83,60 @@ class MainController extends Controller
         ];
             
         }
+
         
-    	return response()->json([$categoriesList]);
+    	return response()->json($categoriesList);
     }
      public function showCategory($id){
+        $productList=[];
+        if($id==0){
+            $populars=Product::where('is_hit',true)->get();
+            $populars=$populars->sortByDesc('id');
+             foreach ($populars as $product) {
+            $productList[]=[
+            'id'=>$product->id,
+            'name'=>$product->name,
+            'price'=>$product->price,
+            'weight'=>$product->weight,
+            'image'=>$product->image,
+            
+            'old_price'=>$product->old_price ,
+            'info'=>$product->info,
+        ];
+        }
+              $popularsList=[
+            'id'=>0,
+            'name'=>'Популярное ',
+            'products'=>$productList,
+        ];
+              return response()->json($popularsList);
+        }
+       
         $category=Category::find($id);
+       
         if(!$category){
             return response()->json([
                 'status'=>false,
                 'message'=>'Category Not Found'
             ],404);
         }
-        $this->categoryList[]=[
+        $products=$category->products;
+        $products=$products->sortByDesc('id');
+         foreach ($products as $product) {
+            $productList[]=[
+            'id'=>$product->id,
+            'name'=>$product->name,
+            'price'=>$product->price,
+            'weight'=>$product->weight,
+            'image'=>$product->image,
+            'old_price'=>$product->old_price ,
+            'info'=>$product->info,
+        ];
+        }
+        $this->categoryList=[
             'id'=>$category->id,
             'name'=>$category->name,
-            'products'=>$category->products,
+            'products'=>$productList,
         ];
         return response()->json($this->categoryList);
     }
@@ -111,11 +149,29 @@ class MainController extends Controller
     	return response()->json($payments);
     }
        public function showCrossSells(){
-    	$seles=CrossSell::all();
-    	return response()->json($seles);
+     $crossSells=CrossSell::orderBy('id', 'DESC')->get();
+        if(!$crossSells){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Not found Cross Sell'
+            ]);
+        }
+
+        foreach ($crossSells as $crossSell) {
+            $this->crossList[]=[
+            'id'=>$crossSell->id,
+            'name'=>$crossSell->name,
+            'price'=>$crossSell->price,
+           
+        ];
+        }
+        return response()->json($this->crossList);
     }
+
+    
      public function showPopulars(){
         $populars=Product::where('is_hit',true)->get();
+
         return response()->json($populars);
     }
     

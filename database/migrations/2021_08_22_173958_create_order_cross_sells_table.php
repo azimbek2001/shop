@@ -15,13 +15,13 @@ class CreateOrderCrossSellsTable extends Migration
     {
         Schema::create('order_cross_sells', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('cross_sell_id');
             
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('order_prods')->onDelete('cascade');
             $table->foreign('cross_sell_id')->references('id')->on('cross_sells')->onDelete('cascade');
-            $table->unsignedInteger('quanity');
-            $table->unsignedInteger('total');
+         //   $table->unsignedInteger('quanity');
+            $table->unsignedInteger('price');
             $table->timestamps();
         });
     }

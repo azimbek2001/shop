@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Product;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Http\Request;
+use File;
 class ProductsController extends Controller
 {
     /**
@@ -14,7 +16,17 @@ class ProductsController extends Controller
     public function index()
     {
         //
-        return Product::all();
+        $this->productList=array();
+       $products=Product::orderBy('id', 'DESC')->get();
+        foreach ($products as $product) {
+            $this->productList[]=[
+            'id'=>$product->id,
+            'name'=>$product->name,
+            'price'=>$product->price,
+           'image'=>$product->image,
+        ];
+        }
+        return response()->json($this->productList);
     }
 
     /**
@@ -36,18 +48,17 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         //
-        $path=$request->file('image')->store('product');
+        $path = $request->file('image')->store('product');
+        
        $product= Product::create([
         'name'=>$request->name,
         'description'=>$request->description,
         'category_id'=>$request->category_id,
         'image'=>$path,
         'weight'=>$request->weight,
-        'having'=>$request->having,
         'price'=>$request->price,
         'is_hit'=>$request->is_hit,
         'info'=>$request->info,
-
         'old_price'=>$request->old_price,
         'ingridients'=>$request->ingridients,
         ]);
@@ -69,7 +80,22 @@ class ProductsController extends Controller
                 'message'=>'Product Not Found'
             ],404);
         }
-        return $product;
+      
+            $this->productList=[
+            'id'=>$product->id,
+            'name'=>$product->name,
+            'price'=>$product->price,
+            'is_hit'=>$product->is_hit,
+            'ingridients'=>$product->ingridients,
+            'description'=>$product->description,
+            'weight'=>$product->weight,
+            'image'=>$product->image,
+            'old_price'=>$product->old_price ,
+            'category'=>$product->category,
+            'info'=>$product->info,
+        ];
+        
+        return response()->json($this->productList);
     }
 
     /**
@@ -100,20 +126,60 @@ class ProductsController extends Controller
                 'message'=>'Product Not Found'
             ],404);
         }
+        if ($request->hasFile('image'))
+{
+        if($request->image->isValid()){
+     \Storage::delete($product->image);
+        $path = Storage::url($request->file('image')->store('product'));
+         $product->image=$path;
+}
+       }
         $product->name=$request->name;
         $product->description=$request->description;
         $product->category_id=$request->category_id;
         $product->weight=$request->weight;
-        $product->having=$request->having;
+        
         $product->price=$request->price;
         $product->is_hit=$request->is_hit;
+       
         $product->info=$request->info;
         $product->old_price=$request->old_price;
         $product->ingridients=$request->ingridients;
         $product->save();
         return $product;
     }
-
+      public function updatePost(Request $request, $id)
+    {
+        //
+        $product=Product::find($id);
+         if(!$product){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Product Not Found'
+            ],404);
+        }
+        if ($request->hasFile('image'))
+{
+        if($request->image->isValid()){
+     \Storage::delete($product->image);
+        $path=$request->file('image')->store('product');
+         $product->image=$path;
+}
+       }
+        $product->name=$request->name;
+        $product->description=$request->description;
+        $product->category_id=$request->category_id;
+        $product->weight=$request->weight;
+        
+        $product->price=$request->price;
+        $product->is_hit=$request->is_hit;
+       
+        $product->info=$request->info;
+        $product->old_price=$request->old_price;
+        $product->ingridients=$request->ingridients;
+        $product->save();
+        return $product;
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -129,6 +195,8 @@ class ProductsController extends Controller
                 'message'=>'Product Not Found'
             ],404);
         }
+         \Storage::delete($product->image);
+       
         $product->delete();
         return response()->json([
             'status'=>true,

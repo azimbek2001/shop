@@ -12,7 +12,8 @@ use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\CrossController;
 use App\Http\Controllers\DostController;
 use App\Http\Controllers\CommentsController;
-
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
 
 
 /*
@@ -35,6 +36,10 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
+
+    Route::apiResource('orders',UserOrderController::class)->only([
+   'index','show'
+]);
     Route::apiResource('comments',CommentsController::class)->only([
    'store'
 ]);
@@ -45,14 +50,20 @@ Route::group([
     'middleware' => 'admin',
     'prefix' => 'admin'
 	], function($router){
-	Route::get('/admin', [AuthController::class, 'admin']);    
+	Route::get('/admin', [AuthController::class, 'admin']);   
+    Route::get('/execute_orders',[OrderController::class,'executeOrders']) ;
+    Route::get('/active_orders',[OrderController::class,'activeOrders']) ;
+    Route::post('products/{id}',[ProductsController::class,'updatePost']) ;
+
     Route::apiResource('products',ProductsController::class);
     Route::apiResource('categories',CategoriesController::class);
     Route::apiResource('comments',CommentsController::class);  
     Route::apiResource('payments',PaymentsController::class);  
     Route::apiResource('cross_sells',CrossController::class);  
     Route::apiResource('dostinfos',DostController::class);  
-
+    Route::apiResource('orders',OrderController::class)->only([
+   'index','show','destroy','update'
+]);
     Route::apiResource('users',UserController::class)->only([
    'index','show','update','destroy'
 ]);  ;  
@@ -67,9 +78,10 @@ Route::get('/categories/{id}',[MainController::class,'showCategory']);
 Route::get('/categories',[MainController::class,'showCategories']);
 Route::get('/dostinfos',[MainController::class,'showDostInfos']);
 Route::get('/payments',[MainController::class,'showPayments']);
-Route::get('/populars',[MainController::class,'showPopulars']);
 Route::get('/cross_sells',[MainController::class,'showCrossSells']);
-
+Route::apiResource('orders',OrderController::class)->only([
+   'store'
+]); 
 
 
 

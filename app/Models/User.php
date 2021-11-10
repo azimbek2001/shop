@@ -60,6 +60,9 @@ class User extends Authenticatable implements JWTSubject
     public function comments(){
         return $this->hasMany(Comment::class,'user_id','id');
     }
+    public function orders(){
+        return $this->hasMany(Order::class,'user_id','id');
+    }
     public function favorites(){
         return $this->hasMany(Favorite::class,'user_id','id');
     }

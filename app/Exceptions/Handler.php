@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Exceptions;
-
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
